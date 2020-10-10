@@ -12,12 +12,19 @@ class database_manager():
             self.database_connection = connect(path, check_same_thread=False)
             self.database_cursor = self.database_connection.cursor()
     
-    def execute(self, request=None, commit=False):
+    def execute(self, request=None, commit=False, fetch_all=False, fetch=0):
         if (request != ''):
             self.thread_lock.acquire(True)
             self.database_cursor.execute(*request) if (isinstance(request, tuple) == True) else self.database_cursor.execute(request)
             self.database_connection.commit() if commit == True else None
+            if (fetch_all == True) and (fetch ==  0):
+                results = list(self.database_cursor.fetchall())
+            elif (fetch_all == False) and (fetch > 0):
+                results = list(self.database_cursor.fetchall())[:fetch]
+            else:
+                results = None
             self.thread_lock.release()
+            return results if results != None else None
 
     def insert(self, table='', values=[]):
         if (table != '') and (values != []):
