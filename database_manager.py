@@ -31,11 +31,11 @@ class database_manager():
             request = f'INSERT INTO {table} VALUES ({("?," * len(values))[:-1]})'
             self.execute(request=((request, values)), commit=True)
 
-    def select(self, table='', columns=['*'], condition_column='', condition_value='', result_count=-1):
+    def select(self, table='', columns=['*'], condition_column='', condition_operation='=', condition_value='', result_count=-1, sort_by='', sort_order='ASC'):
         if (table != '') and (columns != []):
-            request = f'SELECT {", ".join(columns)} FROM {table} WHERE {condition_column} = "{condition_value}"' if (condition_column !='') and (condition_value != '') else f'SELECT {", ".join(columns)} FROM {table}'
-            self.execute(request=request)
-            results = self.database_cursor.fetchall() 
+            request = f'SELECT {", ".join(columns)} FROM {table} WHERE {condition_column} {condition_operation} "{condition_value}"' if (condition_column !='') and (condition_value != '') else f'SELECT {", ".join(columns)} FROM {table}'
+            request += f' ORDER BY {sort_by} {sort_order}' if (sort_by != '') and (sort_order != '') else ''
+            results = self.execute(request=request, fetch_all=True)
             results = results[0:result_count] if (result_count != -1) else results[0:len(results)]
             return results
     
