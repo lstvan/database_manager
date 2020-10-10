@@ -9,7 +9,7 @@ class database_manager():
     
     def connect_database(self, path=''):
         if (path != ''):
-            self.database_connection = connect(path, check_same_thread=False)
+            self.database_connection = connect(path, check_same_thread=False, timeout=3600)
             self.database_cursor = self.database_connection.cursor()
     
     def execute(self, request=None, commit=False, fetch_all=False, fetch=0):
